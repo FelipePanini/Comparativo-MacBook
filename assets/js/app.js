@@ -1,4 +1,4 @@
-import { CHECKED_AT, DEFAULTS, FINISHES, MODELS, SPEC_ROWS, PRICES, STORES, STORE_NAMES, STATES, SOURCES } from './data.js';
+import { CHECKED_AT, DEFAULTS, FINISHES, MODELS, SPEC_ROWS, PRICES, STORES, STORE_NAMES, STATES, SOURCES, TODAY, SUPPORT_NOTE, PRO2021 } from './data.js';
 import { Spring, VelocityTracker, project, rubberband, clamp, reducedMotion } from './spring.js';
 
 /* ---------- Utilidades ---------- */
@@ -153,6 +153,38 @@ function computeCost({ price, taxRate, fx, iof, other = 0 }) {
 }
 const defaultCost = price => computeCost({ price, taxRate: stateById(DEFAULTS.state).rate, fx: DEFAULTS.fx, iof: DEFAULTS.iof });
 
+/* ---------- Suporte de software (estimativas) ---------- */
+const midpoint = ([a, b]) => (a + b) / 2;
+const SEPTEMBER = 0.7; // versões novas do macOS saem em setembro
+function supportInfo(m) {
+  const s = m.support;
+  const majorEnd = midpoint(s.majorEnd) + SEPTEMBER;
+  const securityEnd = midpoint(s.securityEnd) + SEPTEMBER;
+  return {
+    majorEnd,
+    securityEnd,
+    // Versões lançadas depois do macOS 27 (2026).
+    versionsLeft: [Math.max(0, s.majorEnd[0] - 2026), Math.max(0, s.majorEnd[1] - 2026)],
+    macosLast: [s.majorEnd[0] - 1999, s.majorEnd[1] - 1999],
+    yearsLeft: Math.max(0, securityEnd - TODAY),
+    secYear: Math.round(midpoint(s.securityEnd)),
+  };
+}
+const versionsText = m => {
+  const [lo, hi] = supportInfo(m).versionsLeft;
+  return hi === 0 ? 'nenhuma' : `≈ ${(lo + hi) / 2} (de ${lo} a ${hi})`;
+};
+const securityText = m => (m.support.confirmed ? `~${m.support.securityEnd[0]} (prazo da Apple)` : `~${m.support.securityEnd[0]}–${m.support.securityEnd[1]}`);
+const costPerYear = m => defaultCost(m.typicalPrice).total / Math.max(supportInfo(m).yearsLeft, 0.5);
+
+// Linhas da tabela de especificações que dependem das estimativas.
+MODELS.forEach(m => {
+  const info = supportInfo(m);
+  m.specs.updates = info.versionsLeft[1] === 0 ? 'Nenhuma: parou no macOS 26' : `${versionsText(m)}, até o macOS ${info.macosLast[0]}–${info.macosLast[1]}`;
+  m.specs.security = securityText(m);
+  m.specs.batteryService = usd(m.service.battery);
+});
+
 /* ---------- Veredito ---------- */
 function renderVerdict() {
   const picks = [
@@ -174,6 +206,7 @@ function renderVerdict() {
       <h3 class="vcard-name">${m.name} ${m.chip}</h3>
       <p class="vcard-sub">${m.year} · ${p.sub}</p>
       <p class="vcard-price">${priceText}<small>${costText} no total, com sales tax de Orlando, IOF e imposto se passar da cota</small></p>
+      <p class="vcard-support">Atualizações até ~${supportInfo(m).secYear} · ≈ ${Math.round(supportInfo(m).yearsLeft)} anos</p>
       <ul class="vcard-list">${p.points.map(t => `<li>${t}</li>`).join('')}</ul>
       <button class="vcard-more" type="button" data-open="${m.id}">Ver detalhes <span aria-hidden="true">›</span></button>
     </article>`;
@@ -181,7 +214,7 @@ function renderVerdict() {
 
   $('#verdict-notes').innerHTML = `
     <div class="vnote vnote--skip reveal">${ICON.pause}<div><strong><span class="status-label">Não compensa agora:</span> Air M3 e M4</strong><p>Recondicionados custam de US$\u00a0990 a US$\u00a01.310, colados no M5 novo em promoção. Só vale um M4 por até ~US$\u00a01.000 (já esteve a US$\u00a0999 em maio).</p></div></div>
-    <div class="vnote vnote--avoid reveal">${ICON.warning}<div><strong><span class="status-label">Evite:</span> Pro 16″ 2019 (Intel)</strong><p>Não recebe o macOS 27 nem Apple Intelligence, esquenta e já tem bateria velha. Só correções de segurança até ~2028.</p></div></div>`;
+    <div class="vnote vnote--avoid reveal">${ICON.warning}<div><strong><span class="status-label">Evite:</span> Pro 16″ 2019 (Intel)</strong><p>Não recebe o macOS 27 nem Apple Intelligence, esquenta e já tem bateria velha. Só correções de segurança até ~2028, e a Apple já o trata como vintage.</p></div></div>`;
 }
 
 /* ---------- Carrossel de modelos ---------- */
@@ -189,7 +222,7 @@ function renderCarousel() {
   $('#carousel-track').innerHTML = MODELS.map(m => {
     const tagMod = m.verdict === 'best' ? 'best' : m.verdict === 'avoid' ? 'avoid' : '';
     const market = m.market === 'novo' ? 'Novo, a partir de' : 'Recondicionado, a partir de';
-    const facts = [m.specs.battery, m.specs.weight, m.specs.ai === 'Sim' ? 'Apple Intelligence' : 'Sem Apple Intelligence'];
+    const facts = [m.specs.battery, m.specs.weight, m.support.confirmed ? `Segurança até ~${m.support.securityEnd[0]}` : `Atualizações até ~${supportInfo(m).secYear}`];
     return `<li class="mcard">
       <button class="mcard-hit" type="button" data-open="${m.id}" aria-label="${m.name} ${m.chip}, ${m.year}. ${market} ${usd(fromPrice(m.id))}. ${m.verdictLabel}. Ver detalhes.">
         <span class="mcard-tag ${tagMod ? `mcard-tag--${tagMod}` : ''}">${m.verdictLabel}</span>
@@ -412,11 +445,11 @@ function renderPerf() {
 
 /* ---------- Especificações ---------- */
 const HIGHLIGHTS = {
-  'air-m5': { chip: 'good', wireless: 'good', camera: 'good' },
+  'air-m5': { chip: 'good', wireless: 'good', camera: 'good', updates: 'good', security: 'good' },
   'air-m4': { camera: 'good' },
   'air-m2': { monitors: 'bad' },
-  'pro-2021': { display: 'good', brightness: 'good', refresh: 'good', battery: 'good', ports: 'good' },
-  'pro-2019': { battery: 'bad', camera: 'bad', ai: 'bad', macos: 'bad', cooling: 'bad' },
+  'pro-2021': { display: 'good', brightness: 'good', refresh: 'good', battery: 'good', ports: 'good', bandwidth: 'good' },
+  'pro-2019': { battery: 'bad', camera: 'bad', ai: 'bad', macos: 'bad', cooling: 'bad', updates: 'bad', security: 'bad' },
 };
 
 function initSpecs() {
@@ -1079,6 +1112,25 @@ function initLede() {
   });
 }
 
+/* ---------- Seções fixas com paradas (linha do tempo e Raio-X) ---------- */
+// O texto sai antes de o próximo entrar (nunca dois sobrepostos); o visual faz um crossfade curto.
+function applyStops(t, steps, visuals) {
+  const reduce = reducedMotion();
+  steps.forEach((step, i) => {
+    const d = t - i;
+    const textOpacity = clamp(1 - (Math.abs(d) - 0.22) / 0.28, 0, 1);
+    const visualOpacity = clamp(1 - (Math.abs(d) - 0.2) / 0.4, 0, 1);
+    step.style.opacity = String(textOpacity);
+    step.style.transform = reduce ? '' : `translateY(${(-d * 40).toFixed(1)}px)`;
+    step.style.visibility = textOpacity === 0 ? 'hidden' : '';
+    step.setAttribute('aria-hidden', String(textOpacity < 0.5));
+    const visual = visuals[i];
+    visual.style.opacity = String(visualOpacity);
+    visual.style.visibility = visualOpacity === 0 ? 'hidden' : '';
+    visual.style.transform = reduce ? '' : `translateX(${(-d * 56).toFixed(1)}px) scale(${(1 - Math.min(Math.abs(d), 1) * 0.06).toFixed(3)})`;
+  });
+}
+
 /* ---------- Linha do tempo: cada rolada troca o modelo ---------- */
 const TIMELINE = [
   ['pro-2019', 'O último Intel. Teclado bom, mas esquenta, dura 11 h e não recebe o macOS 27.'],
@@ -1094,7 +1146,8 @@ function initTimeline() {
   const models = TIMELINE.map(([id]) => byId[id]);
   $('#tl-steps').innerHTML = TIMELINE.map(([id, text]) => {
     const m = byId[id];
-    return `<article class="tl-step"><p class="tl-year">${m.year}</p><h3 class="tl-name">${m.name} ${m.chip}</h3><p class="tl-text">${text}</p></article>`;
+    const support = m.support.confirmed ? `Só correções de segurança, até ~${m.support.securityEnd[0]}` : `Atualizações até ~${supportInfo(m).secYear} (estimativa)`;
+    return `<article class="tl-step"><p class="tl-year">${m.year}</p><h3 class="tl-name">${m.name} ${m.chip}</h3><p class="tl-text">${text}</p><p class="tl-support">${support}</p></article>`;
   }).join('');
   $('#tl-macs').innerHTML = models.map(m => `<div class="tl-mac">${macSVG(m)}</div>`).join('');
   const rail = $('#tl-rail');
@@ -1119,27 +1172,10 @@ function initTimeline() {
   };
   new ResizeObserver(() => { measureRail(); queueScroll(); }).observe(rail);
 
-  const localnav = $('#localnav');
   onScroll(() => {
-    // Sub-navegação escura enquanto a seção escura passa por baixo dela.
-    const r = section.getBoundingClientRect();
-    localnav.classList.toggle('localnav--dark', r.top <= LOCALNAV_H && r.bottom > LOCALNAV_H);
     const p = pinnedProgress(section);
     const t = p * (models.length - 1);
-    const reduce = reducedMotion();
-    steps.forEach((step, i) => {
-      const d = t - i;
-      // O texto sai antes de o próximo entrar (nunca dois anos sobrepostos); o Mac faz um crossfade curto.
-      const textOpacity = clamp(1 - (Math.abs(d) - 0.22) / 0.28, 0, 1);
-      const macOpacity = clamp(1 - (Math.abs(d) - 0.2) / 0.4, 0, 1);
-      step.style.opacity = String(textOpacity);
-      step.style.transform = reduce ? '' : `translateY(${(-d * 40).toFixed(1)}px)`;
-      step.style.visibility = textOpacity === 0 ? 'hidden' : '';
-      step.setAttribute('aria-hidden', String(textOpacity < 0.5));
-      const mac = macs[i];
-      mac.style.opacity = String(macOpacity);
-      mac.style.transform = reduce ? '' : `translateX(${(-d * 56).toFixed(1)}px) scale(${(1 - Math.min(Math.abs(d), 1) * 0.06).toFixed(3)})`;
-    });
+    applyStops(t, steps, macs);
     const active = Math.round(t);
     ticks.forEach((tick, i) => {
       tick.classList.toggle('is-active', i === active);
@@ -1171,6 +1207,16 @@ function initNav() {
   // Borda da sub-navegação só quando ela gruda no topo.
   const localnav = $('#localnav');
   new IntersectionObserver(([entry]) => localnav.classList.toggle('is-stuck', !entry.isIntersecting)).observe($('#globalnav'));
+
+  // Sub-navegação escura enquanto uma seção escura passa por baixo dela.
+  const darkSections = $$('[data-nav-dark]');
+  onScroll(() => {
+    const dark = darkSections.some(sec => {
+      const r = sec.getBoundingClientRect();
+      return r.top <= LOCALNAV_H + 1 && r.bottom > LOCALNAV_H;
+    });
+    localnav.classList.toggle('localnav--dark', dark);
+  });
 }
 
 function initReveal() {
@@ -1184,6 +1230,371 @@ function initReveal() {
   $$('.reveal').forEach(el => io.observe(el));
 }
 
+/* ---------- Atualizações: gráfico de linha do tempo do suporte ---------- */
+function renderSupportChart(tooltip) {
+  $('#support-note').textContent = SUPPORT_NOTE;
+  const fig = $('#support-chart');
+  const X0 = 2019;
+  const X1 = 2037;
+  const x = year => ((year - X0) / (X1 - X0)) * 100;
+  const ticks = [2019, 2022, 2025, 2028, 2031, 2034, 2037];
+  const whisker = range => (range[0] === range[1] ? '' : `<span class="sc-whisker" style="left:${x(range[0] + SEPTEMBER)}%; width:${x(range[1] + SEPTEMBER) - x(range[0] + SEPTEMBER)}%"></span>`);
+
+  const rows = MODELS.map(m => {
+    const info = supportInfo(m);
+    const start = x(m.release);
+    const mid = x(info.majorEnd);
+    const end = x(info.securityEnd);
+    const years = Math.round(info.yearsLeft);
+    const aria = `${m.name} ${m.chip}: versões novas do macOS ${versionsText(m)}; correções de segurança até ${securityText(m)}; cerca de ${years} anos a partir de hoje.`;
+    return `<div class="sc-row" data-model="${m.id}" tabindex="0" aria-label="${escapeHtml(aria)}">
+      <div class="sc-label"><strong>${m.name} ${m.chip}</strong><span>lançado em ${m.released}</span></div>
+      <div class="sc-track">
+        ${ticks.map(t => `<span class="sc-grid" style="left:${x(t)}%"></span>`).join('')}
+        <span class="sc-seg sc-seg--full" data-left="${start}" data-width="${mid - start}" style="left:${start}%"></span>
+        <span class="sc-seg sc-seg--sec" data-left="${mid}" data-width="${end - mid}" style="left:calc(${mid}% + 2px)"></span>
+        ${whisker(m.support.majorEnd)}${whisker(m.support.securityEnd)}
+        <span class="sc-today" style="left:${x(TODAY)}%"></span>
+      </div>
+      <div class="sc-value"><strong>≈ ${years} ${years === 1 ? 'ano' : 'anos'}</strong><span>até ~${info.secYear}</span></div>
+    </div>`;
+  }).join('');
+
+  const tableRows = MODELS.map(m => `<tr><td>${m.name} ${m.chip}</td><td>${m.released}</td><td>${versionsText(m)}</td><td>${m.support.majorEnd[0] === m.support.majorEnd[1] ? m.support.majorEnd[0] : `${m.support.majorEnd[0]}–${m.support.majorEnd[1]}`}</td><td>${securityText(m)}</td><td class="num">≈ ${Math.round(supportInfo(m).yearsLeft)}</td></tr>`).join('');
+
+  fig.innerHTML = `
+    <div class="pc-legend sc-legend" aria-hidden="true">
+      <span class="pc-key"><span class="sc-swatch sc-swatch--full"></span>Recebe versões novas do macOS</span>
+      <span class="pc-key"><span class="sc-swatch sc-swatch--sec"></span>Só correções de segurança</span>
+      <span class="pc-key"><span class="sc-swatch sc-swatch--range"></span>Faixa da estimativa</span>
+      <span class="pc-key"><span class="pc-swatch pc-swatch--quota"></span>Hoje</span>
+    </div>
+    <div class="sc-head" aria-hidden="true"><span></span><div class="sc-ticks"><span class="sc-today-label" style="left:${x(TODAY)}%">Hoje · out/2026</span></div><span></span></div>
+    <div class="sc-rows" role="group" aria-label="Até quando cada modelo recebe atualizações">${rows}</div>
+    <div class="sc-axis" aria-hidden="true"><span></span><div class="sc-ticks">${ticks.map(t => `<span class="pc-tick" style="left:${x(t)}%">${t}</span>`).join('')}</div><span></span></div>
+    <figcaption class="visually-hidden">Até quando cada MacBook recebe versões novas do macOS e correções de segurança. Estimativas, exceto o Pro 2019.</figcaption>
+    <details class="pc-table">
+      <summary>Ver como tabela</summary>
+      <div class="data-table-wrap"><table class="data-table">
+        <thead><tr><th>Modelo</th><th>Lançado</th><th>Versões novas pela frente</th><th>Última versão grande (ano)</th><th>Segurança até</th><th class="num">Anos restantes</th></tr></thead>
+        <tbody>${tableRows}</tbody>
+      </table></div>
+    </details>`;
+
+  // As barras crescem com a rolagem: primeiro o azul (macOS novo), depois o trecho só de segurança.
+  const items = $$('.sc-row', fig).map(row => ({
+    full: $('.sc-seg--full', row),
+    sec: $('.sc-seg--sec', row),
+    whiskers: $$('.sc-whisker', row),
+  }));
+  onScroll(() => {
+    const p = reducedMotion() ? 1 : viewProgress($('.sc-rows', fig), 0.95, 0.35);
+    items.forEach((it, i) => {
+      const local = clamp(p * 1.4 - i * 0.07, 0, 1);
+      const a = easeOut(clamp(local * 2, 0, 1));
+      const b = easeOut(clamp(local * 2 - 1, 0, 1));
+      it.full.style.width = `${Number(it.full.dataset.width) * a}%`;
+      it.sec.style.width = `calc(${Number(it.sec.dataset.width) * b}% - ${b > 0 ? 2 : 0}px)`;
+      it.sec.style.opacity = b > 0 ? '1' : '0';
+      it.whiskers.forEach(w => { w.style.opacity = String(b * 0.55); });
+    });
+  });
+
+  const show = row => {
+    const m = byId[row.dataset.model];
+    const info = supportInfo(m);
+    tooltip.show(row.querySelector('.sc-seg--sec'), `
+      <strong>${m.name} ${m.chip}</strong>
+      <div class="tt-row"><span class="tt-swatch sc-swatch--full"></span>Versões novas: ${versionsText(m)}</div>
+      <div class="tt-meta">${info.versionsLeft[1] === 0 ? 'Parou no macOS 26 Tahoe' : `Última provável: macOS ${info.macosLast[0]}–${info.macosLast[1]}`}</div>
+      <div class="tt-row"><span class="tt-swatch sc-swatch--sec"></span>Segurança até ${securityText(m)}</div>
+      <div class="tt-meta">${m.support.confirmed ? 'Prazo anunciado pela Apple' : 'Estimativa pelo histórico da Apple'}</div>`);
+  };
+  fig.addEventListener('pointerover', e => { const r = e.target.closest('.sc-row'); if (r && e.pointerType === 'mouse') show(r); });
+  fig.addEventListener('pointerout', e => { if (e.target.closest('.sc-row') && e.pointerType === 'mouse' && !e.relatedTarget?.closest?.('.sc-row')) tooltip.hide(); });
+  fig.addEventListener('focusin', e => { const r = e.target.closest('.sc-row'); if (r) show(r); });
+  fig.addEventListener('focusout', () => tooltip.hide());
+  fig.addEventListener('click', e => { const r = e.target.closest('.sc-row'); if (r) show(r); });
+}
+
+/* ---------- Atualizações: quanto falta e custo por ano ---------- */
+function renderLongevity() {
+  const items = MODELS.map(m => ({ m, info: supportInfo(m), total: defaultCost(m.typicalPrice).total, perYear: costPerYear(m) }));
+  const cheapest = items.reduce((a, b) => (b.perYear < a.perYear ? b : a));
+  const priciest = items.reduce((a, b) => (b.perYear > a.perYear ? b : a));
+  $('#longevity-intro').textContent = `Dividindo o custo final em reais (preço típico, sales tax de Orlando, IOF e imposto acima da cota) pelos anos de correção de segurança que faltam: o ${cheapest.m.name} ${cheapest.m.chip} sai mais barato por ano (≈ ${brl(cheapest.perYear)}) e o ${priciest.m.name} ${priciest.m.chip}, mais caro (≈ ${brl(priciest.perYear)}).`;
+  $('#longevity').innerHTML = items.map(({ m, info, total, perYear }) => {
+    const years = Math.round(info.yearsLeft);
+    // Todo cartão reserva a linha do selo, para os números ficarem alinhados.
+    const badge = m === cheapest.m ? '<span class="lv-badge">Menor custo por ano</span>'
+      : m.support.confirmed ? '<span class="lv-badge lv-badge--bad">Fim à vista</span>' : '';
+    return `<article class="lv reveal">
+      <h4 class="lv-name">${m.name} ${m.chip}</h4>
+      <p class="lv-big">≈ ${years} ${years === 1 ? 'ano' : 'anos'}</p>
+      <p class="lv-sub">de correções de segurança, até <span class="nowrap">${securityText(m)}</span></p>
+      ${badge}
+      <dl class="lv-facts">
+        <div><dt>Versões novas do macOS</dt><dd>${versionsText(m)}</dd></div>
+        <div><dt>Preço típico</dt><dd>${usd(m.typicalPrice)}</dd></div>
+        <div><dt>Total em reais</dt><dd>${brl(total)}</dd></div>
+        <div><dt>Custo por ano</dt><dd><strong>${brl(perYear)}</strong></dd></div>
+      </dl>
+    </article>`;
+  }).join('');
+
+  $('#service-table').innerHTML = `<table class="spec service">
+    <caption class="visually-hidden">Conserto e bateria de cada modelo</caption>
+    <thead><tr><th scope="col">Modelo</th><th scope="col">Saiu de linha</th><th scope="col">Vintage (conserto se houver peça)</th><th scope="col">Obsoleto (sem conserto Apple)</th><th scope="col">Troca de bateria (Apple, EUA)</th><th scope="col">Bateria</th><th scope="col">Carregador original</th></tr></thead>
+    <tbody>${MODELS.map(m => `<tr>
+      <th scope="row">${m.name} ${m.chip}</th>
+      <td>${m.service.discontinued}</td>
+      <td>${m.id === 'pro-2019' ? `<span class="flag flag--bad">${ICON.warning}<span>${m.service.vintage}</span></span>` : m.service.vintage}</td>
+      <td>${m.service.obsolete}</td>
+      <td>${usd(m.service.battery)}</td>
+      <td>${m.service.wh}</td>
+      <td>${m.service.charger}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+/* ---------- Raio-X do Pro 2021 ---------- */
+const XRAY_VISUALS = {
+  tela: m => `<div class="xr-screen">${macSVG(m, 'cinza')}
+      <span class="xr-chip" style="left:2%; top:12%">Mini-LED</span>
+      <span class="xr-chip" style="right:0; top:30%">1.600 nits HDR</span>
+      <span class="xr-chip" style="left:8%; bottom:16%">ProMotion 120 Hz</span>
+    </div>`,
+  portas: () => {
+    const port = (kind, cx, y) => ({
+      magsafe: `<rect x="${cx - 23}" y="${y - 5}" width="46" height="10" rx="5"/>`,
+      tb: `<rect x="${cx - 13}" y="${y - 5.5}" width="26" height="11" rx="5.5"/>`,
+      jack: `<circle cx="${cx}" cy="${y}" r="6"/>`,
+      hdmi: `<path d="M${cx - 18} ${y - 6} h36 v7 l-4 5 h-28 l-4 -5 z"/>`,
+      sd: `<rect x="${cx - 30}" y="${y - 2.5}" width="60" height="5" rx="2.5"/>`,
+    }[kind]);
+    const side = (title, y, ports) => `
+      <text x="20" y="${y - 20}" class="xr-svg-title">${title}</text>
+      <rect x="20" y="${y}" width="480" height="34" rx="14" class="xr-svg-body"/>
+      <g class="xr-svg-port">${ports.map(([k, cx]) => port(k, cx, y + 17)).join('')}</g>
+      ${ports.map(([k, cx, label]) => `<line x1="${cx}" y1="${y + 40}" x2="${cx}" y2="${y + 52}" class="xr-svg-lead"/><text x="${cx}" y="${y + 68}" text-anchor="middle" class="xr-svg-label">${label}</text>`).join('')}`;
+    return `<svg class="xr-svg" viewBox="0 0 520 300" role="presentation">
+      ${side('Lado esquerdo', 50, [['magsafe', 72, 'MagSafe 3'], ['tb', 178, 'Thunderbolt 4'], ['tb', 290, 'Thunderbolt 4'], ['jack', 452, 'Fone']])}
+      ${side('Lado direito', 190, [['hdmi', 100, 'HDMI'], ['tb', 250, 'Thunderbolt 4'], ['sd', 420, 'Cartão SD']])}
+    </svg>`;
+  },
+  chip: () => {
+    const pCores = Array.from({ length: 8 }, (_, i) => `<rect x="${70 + (i % 4) * 34}" y="${92 + Math.floor(i / 4) * 34}" width="28" height="28" rx="5" class="xr-core-p"/>`).join('');
+    const eCores = Array.from({ length: 2 }, (_, i) => `<rect x="${70 + i * 22}" y="${166}" width="16" height="16" rx="4" class="xr-core-e"/>`).join('');
+    const gpu = Array.from({ length: 16 }, (_, i) => `<rect x="${220 + (i % 4) * 20}" y="${92 + Math.floor(i / 4) * 22}" width="16" height="18" rx="3" class="xr-core-g"/>`).join('');
+    return `<svg class="xr-svg" viewBox="0 0 360 300" role="presentation">
+      <rect x="40" y="30" width="280" height="200" rx="26" class="xr-chip-pkg"/>
+      <rect x="56" y="46" width="248" height="168" rx="14" class="xr-chip-die"/>
+      <text x="70" y="78" class="xr-chip-name">M1 Pro</text>
+      ${pCores}${eCores}${gpu}
+      <text x="70" y="204" class="xr-svg-label xr-left">CPU 8 + 2</text>
+      <text x="220" y="204" class="xr-svg-label xr-left">GPU 16</text>
+      <text x="180" y="262" text-anchor="middle" class="xr-svg-label">Banda de memória: 200 GB/s</text>
+    </svg>`;
+  },
+  bateria: () => `<svg class="xr-svg" viewBox="0 0 360 240" role="presentation">
+      <rect x="30" y="50" width="272" height="124" rx="24" class="xr-batt-shell"/>
+      <rect x="306" y="92" width="14" height="40" rx="5" class="xr-batt-tip"/>
+      <rect x="44" y="64" width="244" height="96" rx="14" class="xr-batt-fill" id="xr-batt-fill"/>
+      <text x="166" y="124" text-anchor="middle" class="xr-batt-pct" id="xr-batt-pct">0%</text>
+      <text x="166" y="212" text-anchor="middle" class="xr-svg-label">Carregador de 140 W · 50% em ~30 min</text>
+    </svg>`,
+  som: () => {
+    const dots = (x0) => Array.from({ length: 60 }, (_, i) => `<circle cx="${x0 + (i % 4) * 7}" cy="${74 + Math.floor(i / 4) * 7}" r="1.7"/>`).join('');
+    const keys = Array.from({ length: 72 }, (_, i) => `<rect x="${112 + (i % 12) * 15}" y="${74 + Math.floor(i / 12) * 15}" width="12" height="12" rx="2.5"/>`).join('');
+    return `<svg class="xr-svg" viewBox="0 0 400 270" role="presentation">
+      <path d="M22 110 q-14 32 0 64 M10 98 q-22 44 0 88" class="xr-wave"/>
+      <path d="M378 110 q14 32 0 64 M390 98 q22 44 0 88" class="xr-wave"/>
+      <rect x="40" y="50" width="320" height="200" rx="18" class="xr-svg-body"/>
+      <g class="xr-grille">${dots(64)}${dots(316)}</g>
+      <g class="xr-keys">${keys}</g>
+      <rect x="140" y="176" width="120" height="62" rx="8" class="xr-pad"/>
+    </svg>`;
+  },
+  suporte: m => {
+    const X0 = 2021;
+    const X1 = 2033;
+    const x = y => 30 + ((y - X0) / (X1 - X0)) * 360;
+    const info = supportInfo(m);
+    const years = [2021, 2024, 2027, 2030, 2033];
+    return `<svg class="xr-svg" viewBox="0 0 420 200" role="presentation">
+      ${years.map(y => `<line x1="${x(y)}" y1="40" x2="${x(y)}" y2="132" class="xr-grid"/><text x="${x(y)}" y="156" text-anchor="middle" class="xr-svg-label">${y}</text>`).join('')}
+      <rect x="${x(m.release)}" y="74" width="${x(info.majorEnd) - x(m.release)}" height="18" rx="4" class="xr-sup-full"/>
+      <rect x="${x(info.majorEnd) + 2}" y="74" width="${x(info.securityEnd) - x(info.majorEnd) - 2}" height="18" rx="4" class="xr-sup-sec"/>
+      <line x1="${x(m.support.majorEnd[0] + SEPTEMBER)}" y1="104" x2="${x(m.support.majorEnd[1] + SEPTEMBER)}" y2="104" class="xr-whisk"/>
+      <line x1="${x(m.support.securityEnd[0] + SEPTEMBER)}" y1="104" x2="${x(m.support.securityEnd[1] + SEPTEMBER)}" y2="104" class="xr-whisk"/>
+      <line x1="${x(TODAY)}" y1="40" x2="${x(TODAY)}" y2="132" class="xr-today"/>
+      <text x="${x(TODAY) + 6}" y="52" class="xr-svg-label xr-left">Hoje</text>
+      <text x="${x(m.release)}" y="66" class="xr-svg-label xr-left">macOS novo</text>
+      <text x="${x(info.securityEnd)}" y="66" text-anchor="end" class="xr-svg-label">segurança</text>
+    </svg>`;
+  },
+};
+
+function initXray() {
+  const section = $('#pro-2021');
+  const m = byId['pro-2021'];
+  const stops = PRO2021.stops;
+  $('#xray-steps').innerHTML = stops.map(st => `<article class="xr-step" id="xr-${st.id}">
+      <p class="xr-big${st.big.length > 10 ? ' xr-big--long' : ''}">${st.big}</p>
+      <h3 class="xr-title">${st.title}</h3>
+      <p class="xr-text">${st.text}</p>
+      <p class="xr-note">${st.note}</p>
+    </article>`).join('');
+  $('#xray-visual').innerHTML = stops.map(st => `<div class="xr-vis xr-vis--${st.id}">${XRAY_VISUALS[st.id](m)}</div>`).join('');
+  const rail = $('#xray-rail');
+  rail.innerHTML = `<span class="xr-rail-fill"></span>${stops.map((st, i) => `<button type="button" class="xr-rail-btn" data-stop="${i}">${st.label}</button>`).join('')}`;
+
+  const steps = $$('.xr-step', section);
+  const visuals = $$('.xr-vis', section);
+  const buttons = $$('.xr-rail-btn', rail);
+  const railFill = $('.xr-rail-fill', rail);
+  const battIndex = stops.findIndex(st => st.id === 'bateria');
+  const battFill = $('#xr-batt-fill');
+  const battPct = $('#xr-batt-pct');
+  const BATT_W = 244;
+
+  // Tocar numa parte rola até ela.
+  rail.addEventListener('click', e => {
+    const b = e.target.closest('.xr-rail-btn');
+    if (!b) return;
+    const total = section.offsetHeight - (innerHeight - LOCALNAV_H);
+    const top = section.getBoundingClientRect().top + scrollY - LOCALNAV_H + total * (Number(b.dataset.stop) / (stops.length - 1));
+    window.scrollTo({ top, behavior: reducedMotion() ? 'auto' : 'smooth' });
+  });
+
+  onScroll(() => {
+    const p = pinnedProgress(section);
+    const t = p * (stops.length - 1);
+    applyStops(t, steps, visuals);
+    const active = Math.round(t);
+    buttons.forEach((b, i) => {
+      b.classList.toggle('is-active', i === active);
+      b.setAttribute('aria-current', i === active ? 'step' : 'false');
+    });
+    railFill.style.width = `${p * 100}%`;
+    // A bateria "carrega" enquanto você rola pela parada dela.
+    const charge = reducedMotion() ? 1 : clamp((t - (battIndex - 0.45)) / 0.55, 0, 1);
+    battFill.setAttribute('width', String(Math.max(0.01, BATT_W * charge)));
+    battPct.textContent = `${Math.round(charge * 100)}%`;
+  });
+}
+
+/* ---------- Pro 2021: vale a pena? ---------- */
+function renderProBuying() {
+  const pro = byId['pro-2021'];
+  const air = byId['air-m5'];
+  const alt = PRO2021.m2pro;
+  const altInfo = { yearsLeft: Math.max(0, midpoint(alt.support.securityEnd) + SEPTEMBER - TODAY), secYear: Math.round(midpoint(alt.support.securityEnd)) };
+  const altTotal = defaultCost(alt.price[0]).total;
+  const proTotal = defaultCost(pro.typicalPrice).total;
+  const airTotal = defaultCost(air.typicalPrice).total;
+  const proPrices = offersFor('pro-2021');
+  const cols = [
+    { key: 'pro', name: 'Pro 16″ M1 Pro', sub: '2021 · recondicionado', svg: macSVG(pro, 'cinza'),
+      price: `${usd(proPrices[0].price)}–${thousands(Math.round(proPrices[proPrices.length - 1].price))}`, total: proTotal,
+      quota: defaultCost(pro.typicalPrice).paid <= DEFAULTS.quota, years: supportInfo(pro).yearsLeft, secYear: supportInfo(pro).secYear,
+      perYear: proTotal / supportInfo(pro).yearsLeft, single: pro.gb6.single, multi: pro.gb6.multi,
+      screen: 'XDR mini-LED · 120 Hz', ports: 'HDMI 2.0 · SD · 3 Thunderbolt\u00a04', weight: '2,1 kg', battery: 'até 21 h', wireless: 'Wi-Fi 6', warranty: 'Da loja (90 dias a 1 ano)' },
+    { key: 'alt', name: 'Pro 16″ M2 Pro', sub: '2023 · recondicionado', svg: macSVG({ ...pro, wallpaper: ['#0d2a5c', '#5b4fd6', '#ff9bd2'] }, 'prateado'),
+      price: `${usd(alt.price[0])}–${thousands(Math.round(alt.price[1]))}`, total: altTotal,
+      quota: false, years: altInfo.yearsLeft, secYear: altInfo.secYear, perYear: altTotal / altInfo.yearsLeft,
+      single: alt.gb6.single, multi: alt.gb6.multi,
+      screen: 'XDR mini-LED · 120 Hz', ports: 'HDMI 2.1 · SD · 3 Thunderbolt\u00a04', weight: alt.weight, battery: alt.battery, wireless: alt.wireless, warranty: 'Best Buy ou da loja' },
+    { key: 'air', name: 'Air 15″ M5', sub: '2026 · novo', svg: macSVG(air),
+      price: usd(air.typicalPrice), total: airTotal, quota: false, years: supportInfo(air).yearsLeft, secYear: supportInfo(air).secYear,
+      perYear: costPerYear(air), single: air.gb6.single, multi: air.gb6.multi,
+      screen: 'Liquid Retina · 60 Hz', ports: '2 Thunderbolt\u00a04', weight: '≈ 1,51 kg', battery: 'até 18 h', wireless: 'Wi-Fi 7', warranty: '1 ano Apple' },
+  ];
+  const best = (key, dir) => {
+    const vals = cols.map(c => c[key]);
+    const target = dir === 'min' ? Math.min(...vals) : Math.max(...vals);
+    return c => c[key] === target;
+  };
+  const rows = [
+    ['Preço', c => c.price],
+    ['Custo final estimado', c => brl(c.total), best('total', 'min')],
+    ['Cota de US$ 1.000', c => (c.quota ? 'Cabe' : 'Passa'), c => c.quota],
+    ['Atualizações até (estim.)', c => `~${c.secYear} · ≈ ${Math.round(c.years)} anos`, best('years', 'max')],
+    ['Custo por ano', c => brl(c.perYear), best('perYear', 'min')],
+    ['Um núcleo (Geekbench 6 ≈)', c => thousands(c.single), best('single', 'max')],
+    ['Todos os núcleos (≈)', c => thousands(c.multi), best('multi', 'max')],
+    ['Tela', c => c.screen],
+    ['Portas', c => c.ports],
+    ['Peso', c => c.weight],
+    ['Bateria', c => c.battery],
+    ['Sem fio', c => c.wireless],
+    ['Garantia', c => c.warranty],
+  ];
+  $('#pro-compare').innerHTML = `<div class="spec-table-wrap" tabindex="0" aria-label="Comparação do Pro 2021 (role para o lado no celular)"><table class="spec pro-table">
+    <caption class="visually-hidden">MacBook Pro 16″ M1 Pro (2021) contra Pro 16″ M2 Pro (2023) e Air 15″ M5</caption>
+    <colgroup><col class="spec-col-label">${cols.map(() => '<col>').join('')}</colgroup>
+    <thead><tr><th scope="col"><span class="visually-hidden">Item</span></th>${cols.map(c => `<th scope="col" class="${c.key === 'pro' ? 'is-focus' : ''}"><div class="spec-head-visual">${c.svg}</div><span class="spec-head-name">${c.name}</span><span class="spec-head-sub">${c.sub}</span></th>`).join('')}</tr></thead>
+    <tbody>${rows.map(([label, get, isBest]) => `<tr><th scope="row">${label}</th>${cols.map(c => {
+      const v = get(c);
+      const good = isBest && isBest(c);
+      return `<td class="${c.key === 'pro' ? 'is-focus' : ''}">${good ? `<span class="flag flag--good">${ICON.check}<span>${v}</span></span>` : v}</td>`;
+    }).join('')}</tr>`).join('')}</tbody>
+  </table></div>`;
+
+  $('#pro-verdict').innerHTML = `<strong>Escolha o Pro 2021</strong> se quer a melhor tela e as portas, edita foto ou vídeo, aceita carregar 2,1 kg e ter ≈ ${Math.round(supportInfo(pro).yearsLeft)} anos de atualizações, e quer ficar dentro da cota. Ele tem o menor custo por ano. <strong>O M2 Pro</strong> só compensa por até ~US$ 1.000: acima disso, o <strong>Air M5</strong> novo dura mais. E se aparecer um M1 Pro de <strong>32 GB</strong> por até ~US$ 850, prefira esse.`;
+
+  $('#variants').innerHTML = PRO2021.variants.map((v, i) => `<article class="variant reveal${i === 1 ? ' variant--pick' : ''}">
+      <span class="variant-tag">${v.tag}</span>
+      <h4 class="variant-name">${v.name}</h4>
+      <p class="variant-price">${v.price}</p>
+      <p class="variant-text">${v.text}</p>
+    </article>`).join('');
+}
+
+/* ---------- Checklist da compra (salvo neste aparelho) ---------- */
+function initChecklist() {
+  const KEY = 'macnamala:checklist-pro2021';
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch { saved = {}; }
+  const box = $('#checklist');
+  const items = PRO2021.checklist;
+  box.innerHTML = `
+    <div class="cl-head">
+      <div class="cl-progress"><span class="cl-count" id="cl-count"></span><div class="meter-track"><span class="meter-fill" id="cl-fill"></span></div></div>
+      <button type="button" class="text-link cl-reset" id="cl-reset">Desmarcar tudo</button>
+    </div>
+    <ol class="cl-list">${items.map(([id, title, hint], i) => `<li>
+      <label class="cl-item">
+        <input type="checkbox" data-id="${id}" ${saved[id] ? 'checked' : ''}>
+        <span class="cl-box" aria-hidden="true">${ICON.check}</span>
+        <span class="cl-body"><span class="cl-title"><span class="cl-num">${i + 1}.</span> ${title}</span><span class="cl-hint">${escapeHtml(hint).replace(/`([^`]+)`/g, '<code>$1</code>')}</span></span>
+      </label>
+    </li>`).join('')}</ol>`;
+  const fill = $('#cl-fill');
+  const fillSpring = new Spring(0, { response: 0.35, damping: 1, precision: 0.05, onUpdate: v => { fill.style.width = `${v}%`; } });
+  const update = () => {
+    const boxes = $$('input[type="checkbox"]', box);
+    const done = boxes.filter(b => b.checked).length;
+    $('#cl-count').textContent = `${done} de ${boxes.length} conferidos`;
+    fillSpring.to((done / boxes.length) * 100);
+    $('.cl-progress', box).classList.toggle('is-done', done === boxes.length);
+  };
+  box.addEventListener('change', e => {
+    const input = e.target.closest('input[type="checkbox"]');
+    if (!input) return;
+    saved[input.dataset.id] = input.checked;
+    try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch { /* sem armazenamento: só não salva */ }
+    update();
+  });
+  $('#cl-reset').addEventListener('click', () => {
+    saved = {};
+    try { localStorage.removeItem(KEY); } catch { /* idem */ }
+    $$('input[type="checkbox"]', box).forEach(b => { b.checked = false; });
+    update();
+  });
+  update();
+}
+
 /* ---------- Início ---------- */
 renderVerdict();
 renderCarousel();
@@ -1194,6 +1605,11 @@ renderTips();
 renderSources();
 const tooltip = createTooltip();
 renderPriceChart(tooltip);
+renderSupportChart(tooltip);
+renderLongevity();
+initXray();
+renderProBuying();
+initChecklist();
 const calculator = initCalculator();
 const sheet = initSheet(id => {
   calculator.setModel(id);

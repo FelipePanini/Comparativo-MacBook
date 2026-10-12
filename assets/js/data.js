@@ -40,6 +40,11 @@ export const MODELS = [
     pros: ['O chip mais rápido da lista', 'Wi-Fi 7 e Bluetooth 6 (chip N1)', 'Garantia nova e o maior tempo de atualizações pela frente', 'Silencioso: não tem ventoinha'],
     cons: ['O mais caro dos seis', 'Passa da cota de US$\u00a01.000 da Receita sozinho', 'Tela de 60 Hz, sem ProMotion'],
     brazil: { label: 'No Brasil', amazon: 15699, importers: [10799, 11299] },
+    release: 2026.17,
+    typicalPrice: 1299,
+    // Apple não publica prazos: estimativa pelo histórico (ver SUPPORT_NOTE).
+    support: { majorEnd: [2031, 2033], securityEnd: [2034, 2036] },
+    service: { discontinued: 'à venda', vintage: '2031 ou depois', obsolete: '2033 ou depois', battery: 199, wh: '≈ 66,5 Wh', charger: '40 W USB-C' },
     specs: {
       chip: 'M5 · CPU de 10 núcleos · GPU de 10 núcleos',
       display: '15,3″ Liquid Retina · 2880 × 1864',
@@ -52,6 +57,7 @@ export const MODELS = [
       camera: '12 MP Center Stage',
       wireless: 'Wi-Fi 7 · Bluetooth 6',
       monitors: 'até 2 externos',
+      bandwidth: '153 GB/s',
       cooling: 'Sem ventoinha',
       ai: 'Sim',
       macos: 'macOS 27 ✓',
@@ -76,6 +82,10 @@ export const MODELS = [
     summary: 'Saiu de linha: a Apple não vende mais novo e o estoque de liquidação acabou. Recondicionado custa uns US$\u00a01.170, quase o preço do M5 novo em promoção.',
     pros: ['Mesma câmera de 12 MP e 2 monitores externos do M5', 'Ainda muito rápido', 'Sem ventoinha'],
     cons: ['Recondicionado custa quase o M5 novo', 'Wi-Fi 6E (o M5 tem Wi-Fi 7)', 'Só vale se aparecer por até ~US$\u00a01.000 (esteve a US$\u00a0999 em maio)'],
+    release: 2025.17,
+    typicalPrice: 1170,
+    support: { majorEnd: [2030, 2032], securityEnd: [2033, 2035] },
+    service: { discontinued: 'mar/2026', vintage: '~mar/2031', obsolete: '~mar/2033', battery: 199, wh: '66,5 Wh', charger: '35 W USB-C duplo' },
     specs: {
       chip: 'M4 · CPU de 10 núcleos · GPU de 10 núcleos',
       display: '15,3″ Liquid Retina · 2880 × 1864',
@@ -88,6 +98,7 @@ export const MODELS = [
       camera: '12 MP Center Stage',
       wireless: 'Wi-Fi 6E · Bluetooth 5.3',
       monitors: 'até 2 externos',
+      bandwidth: '120 GB/s',
       cooling: 'Sem ventoinha',
       ai: 'Sim',
       macos: 'macOS 27 ✓',
@@ -112,6 +123,10 @@ export const MODELS = [
     summary: 'Bom computador, preço ruim: recondicionado anda entre US$\u00a0990 e US$\u00a01.310, faixa em que o M5 novo (US$\u00a01.299) entrega bem mais.',
     pros: ['Wi-Fi 6E', 'Até 2 monitores (com a tampa fechada)', 'Sem ventoinha'],
     cons: ['Preço de recondicionado colado no M5 novo', 'Câmera de 1080p', 'Um chip a menos de vida útil que o M4'],
+    release: 2024.17,
+    typicalPrice: 1118,
+    support: { majorEnd: [2029, 2031], securityEnd: [2032, 2034] },
+    service: { discontinued: 'mar/2025', vintage: '~mar/2030', obsolete: '~mar/2032', battery: 199, wh: '66,5 Wh', charger: '35 W USB-C duplo' },
     specs: {
       chip: 'M3 · CPU de 8 núcleos · GPU de 10 núcleos',
       display: '15,3″ Liquid Retina · 2880 × 1864',
@@ -124,6 +139,7 @@ export const MODELS = [
       camera: '1080p FaceTime HD',
       wireless: 'Wi-Fi 6E · Bluetooth 5.3',
       monitors: 'até 2 externos (tampa fechada)',
+      bandwidth: '100 GB/s',
       cooling: 'Sem ventoinha',
       ai: 'Sim',
       macos: 'macOS 27 ✓',
@@ -148,6 +164,10 @@ export const MODELS = [
     summary: 'O mesmo corpo fino e leve dos Airs novos por menos de US$\u00a01.000. O chip é o mais lento entre os Apple Silicon da lista, mas sobra para estudo, escritório e edição leve.',
     pros: ['Corpo idêntico ao M5: 1,51 kg e 1,15 cm', 'Fica perto da cota de US$\u00a01.000 (cabe em estado sem sales tax)', 'Recebe macOS 27 e Apple Intelligence'],
     cons: ['Só 1 monitor externo', 'Wi-Fi 6 e câmera de 1080p', 'Chip mais lento entre os M da lista'],
+    release: 2023.45,
+    typicalPrice: 949,
+    support: { majorEnd: [2028, 2030], securityEnd: [2031, 2033] },
+    service: { discontinued: 'mar/2024', vintage: '~mar/2029', obsolete: '~mar/2031', battery: 199, wh: '66,5 Wh', charger: '35 W USB-C duplo' },
     specs: {
       chip: 'M2 · CPU de 8 núcleos · GPU de 10 núcleos',
       display: '15,3″ Liquid Retina · 2880 × 1864',
@@ -160,6 +180,7 @@ export const MODELS = [
       camera: '1080p FaceTime HD',
       wireless: 'Wi-Fi 6 · Bluetooth 5.3',
       monitors: '1 externo',
+      bandwidth: '100 GB/s',
       cooling: 'Sem ventoinha',
       ai: 'Sim',
       macos: 'macOS 27 ✓',
@@ -181,9 +202,13 @@ export const MODELS = [
     wallpaper: ['#1d1452', '#6a3fd1', '#f08bd0'],
     notch: true, pro: true, chin: false,
     gb6: { single: 2380, multi: 12300 },
-    summary: 'A melhor tela da lista (mini-LED, 120 Hz, 1.600 nits em HDR), HDMI, leitor de cartão SD e os melhores alto-falantes. Recondicionado sai entre US$\u00a0620 e US$\u00a0990, dentro da cota.',
-    pros: ['Tela XDR mini-LED com ProMotion 120 Hz', 'HDMI, leitor SD e 3 Thunderbolt 4', 'Até 21 h de bateria (quando nova)', 'Multi-core no nível do M3'],
-    cons: ['Pesado: 2,1 kg', 'Bateria usada: confira os ciclos', 'Sem garantia Apple: depende da loja'],
+    summary: 'A melhor tela da lista (mini-LED, 120 Hz, 1.600 nits em HDR), HDMI, leitor de cartão SD e os melhores alto-falantes. Recondicionado sai entre US$\u00a0680 e US$\u00a0900, dentro da cota.',
+    pros: ['Tela XDR mini-LED com ProMotion 120 Hz', 'HDMI, leitor SD e 3 Thunderbolt 4', 'Banda de memória de 200 GB/s, o dobro do Air M2/M3', 'Até 21 h de bateria (quando nova)', 'Multi-core no nível do M3'],
+    cons: ['Pesado: 2,1 kg', 'Bateria usada: confira os ciclos', 'Sem garantia Apple: depende da loja', 'Menos tempo de atualizações que os Air (estimativa: novas versões até ~2027–2029)'],
+    release: 2021.8,
+    typicalPrice: 745,
+    support: { majorEnd: [2027, 2029], securityEnd: [2030, 2032] },
+    service: { discontinued: 'jan/2023', vintage: '~jan/2028', obsolete: '~jan/2030', battery: 249, wh: '100 Wh', charger: '140 W USB-C + cabo MagSafe 3' },
     specs: {
       chip: 'M1 Pro · CPU de 10 núcleos · GPU de 16 núcleos',
       display: '16,2″ Liquid Retina XDR (mini-LED) · 3456 × 2234',
@@ -196,6 +221,7 @@ export const MODELS = [
       camera: '1080p FaceTime HD',
       wireless: 'Wi-Fi 6 · Bluetooth 5.0',
       monitors: 'até 2 externos',
+      bandwidth: '200 GB/s',
       cooling: 'Ventoinhas',
       ai: 'Sim',
       macos: 'macOS 27 ✓',
@@ -220,6 +246,11 @@ export const MODELS = [
     summary: 'Barato por um motivo: é o último Intel. Não recebe o macOS 27, não roda Apple Intelligence, esquenta e a bateria (já velha) durava 11 h quando nova.',
     pros: ['O mais barato (US$\u00a0360–580)', 'Teclado Magic Keyboard (o confiável)', 'Até 4 monitores externos'],
     cons: ['Parou no macOS 26 Tahoe; só correções de segurança até ~2028', 'Sem Apple Intelligence', 'Esquenta e faz barulho', 'Bateria de até 11 h quando nova'],
+    release: 2019.87,
+    typicalPrice: 419,
+    // Fato, não estimativa: o macOS 26 Tahoe é o último para Intel e a Apple prometeu 3 anos de segurança.
+    support: { majorEnd: [2025, 2025], securityEnd: [2028, 2028], confirmed: true },
+    service: { discontinued: 'out/2021', vintage: '~out/2026', obsolete: '~out/2028', battery: 249, wh: '100 Wh', charger: '96 W USB-C' },
     specs: {
       chip: 'Intel Core i7 (6 núcleos, 2,6 GHz) · Radeon Pro 5300M',
       display: '16″ Retina · 3072 × 1920',
@@ -232,6 +263,7 @@ export const MODELS = [
       camera: '720p',
       wireless: 'Wi-Fi 5 · Bluetooth 5.0',
       monitors: 'até 4 externos',
+      bandwidth: '—',
       cooling: 'Ventoinhas (esquenta)',
       ai: 'Não',
       macos: 'Parou no macOS 26',
@@ -253,9 +285,13 @@ export const SPEC_ROWS = [
   ['camera', 'Câmera'],
   ['wireless', 'Sem fio'],
   ['monitors', 'Monitores externos'],
+  ['bandwidth', 'Banda de memória'],
   ['cooling', 'Refrigeração'],
   ['ai', 'Apple Intelligence'],
   ['macos', 'macOS atual (27)'],
+  ['updates', 'Versões novas do macOS (estimativa)'],
+  ['security', 'Correções de segurança até (estimativa)'],
+  ['batteryService', 'Troca de bateria (Apple, EUA)'],
   ['launch', 'Preço de lançamento'],
 ];
 
@@ -277,9 +313,10 @@ export const PRICES = [
   { model: 'air-m2', store: 'walmart', condition: 'recondicionado', price: 949,     date: 'out/2026', note: 'Walmart Restored, "Like New"', url: 'https://www.walmart.com/ip/Restored-MacBook-Air-15-Laptop-M2-chip-16GB-Memory-512GB-SSD-Midnight-Refurbished/13461172658' },
   { model: 'air-m2', store: 'bestbuy', condition: 'recondicionado', price: 1009.99, date: 'out/2026', note: 'Geek Squad Certified Refurbished', url: 'https://www.bestbuy.com/site/apple-geek-squad-certified-refurbished-macbook-air-15-laptop-m2-chip-16gb-memory-512gb-ssd-latest-model-midnight/6566246.p?skuId=6566246' },
 
-  { model: 'pro-2021', store: 'walmart',    condition: 'recondicionado', price: 620, date: '2026', stale: true, note: 'Walmart Restored, "Like New"', url: 'https://www.walmart.com/ip/Restored-Apple-MacBook-Pro-16-inch-Apple-M1-Pro-chip-with-10-core-CPU-and-16-core-GPU-16GB-RAM-512GB-SSD-Space-Gray-Refurbished/911616161' },
-  { model: 'pro-2021', store: 'backmarket', condition: 'recondicionado', price: 623, date: 'out/2026', note: 'Estado "Fair" (marcas visíveis)', url: 'https://www.backmarket.com/en-us/p/macbook-pro-2021-16-inch-m1-pro-10-core-and-16-core-gpu-16gb-ram-ssd-512gb/73b93534-c21a-4b57-90ab-4f4eb6e09a40' },
-  { model: 'pro-2021', store: 'backmarket', condition: 'recondicionado', price: 989, date: 'out/2026', note: 'Estado "Good"', url: 'https://www.backmarket.com/en-us/p/macbook-pro-2021-16-inch-m1-pro-10-core-and-16-core-gpu-16gb-ram-ssd-512gb/73b93534-c21a-4b57-90ab-4f4eb6e09a40' },
+  { model: 'pro-2021', store: 'backmarket', condition: 'recondicionado', price: 682, date: '12/10/2026', note: 'Estado "Good", cinza-espacial', url: 'https://www.backmarket.com/en-us/p/macbook-pro-2021-16-inch-m1-pro-10-core-and-16-core-gpu-16gb-ram-ssd-512gb/73b93534-c21a-4b57-90ab-4f4eb6e09a40' },
+  { model: 'pro-2021', store: 'amazon',     condition: 'recondicionado', price: 745, date: '12/10/2026', note: 'Amazon Renewed, estado "Good"', url: 'https://www.amazon.com/s?k=MacBook+Pro+16+2021+M1+Pro+16GB+512GB+renewed' },
+  { model: 'pro-2021', store: 'ebay',       condition: 'recondicionado', price: 782, date: '12/10/2026', note: 'eBay Refurbished, estado "Fair" (Excellent a partir de US$\u00a0896)', url: 'https://www.ebay.com/shop/macbook-pro-m1-16gb-512gb?_nkw=macbook+pro+16+m1+pro+16gb+512gb' },
+  { model: 'pro-2021', store: 'walmart',    condition: 'recondicionado', price: 889, date: 'out/2026', note: 'Walmart Restored', url: 'https://www.walmart.com/ip/Apple-MK183-16-inch-Macbook-Pro-Laptop-16GB-512GB-Space-Gray/190214579' },
 
   { model: 'pro-2019', store: 'backmarket', condition: 'recondicionado', price: 362,    date: 'out/2026', note: 'Estado "Fair"', url: 'https://www.backmarket.com/en-us/p/macbook-pro-retina-16-inch-2019-core-i7-16gb-ssd-512gb/b50c0d4d-e50f-424a-9f0e-f2c646f7a518' },
   { model: 'pro-2019', store: 'bestbuy',    condition: 'recondicionado', price: 499.99, date: 'out/2026', note: 'Certified Refurbished', url: 'https://www.bestbuy.com/product/apple-macbook-pro-16-certified-refurbished-intel-core-i7-2-6ghz-touch-bar-id-16gb-memory-512gb-ssd-2019-space-gray/JXR92VQYC6' },
@@ -355,6 +392,8 @@ export const STORES = [
 
 export const STORE_NAMES = Object.fromEntries(STORES.map(s => [s.id, s.name]));
 STORE_NAMES['apple'] = 'Apple Store';
+STORE_NAMES['ebay'] = 'eBay Refurbished';
+STORE_NAMES['macofalltrades'] = 'Mac of All Trades';
 
 // Sales tax combinado (estado + condado + cidade), aproximado, 2026.
 export const STATES = [
@@ -388,3 +427,73 @@ export const SOURCES = [
   ['Boca · PTAX de 09/10/2026 (R$\u00a04,9892)', 'https://boca.com.br/economia/dolar/cotacao-dolar-09-10-2026'],
   ['Amazon Brasil · MacBook Air 15″ M5 16/512', 'https://www.amazon.com.br/Apple-MacBook-polegadas-n%C3%BAcleos-unificada/dp/B0GR1PLR1K'],
 ];
+
+// ---------- Suporte de software ----------
+// 11/10/2026 como fração de ano (para o marcador "hoje" dos gráficos).
+export const TODAY = 2026.78;
+export const SUPPORT_NOTE = 'A Apple não diz até quando cada Mac recebe atualizações. A estimativa usa o histórico: um Mac recebe de 6 a 8 versões grandes do macOS contadas a partir do ano do chip e, depois da última, cerca de 3 anos de correções de segurança (a Apple corrige a versão atual e as duas anteriores, e prometeu 3 anos para os Intel depois do Tahoe).';
+
+// ---------- Raio-X do MacBook Pro 16″ 2021 ----------
+export const PRO2021 = {
+  stops: [
+    { id: 'tela', label: 'Tela', big: '120 Hz', title: 'Tela Liquid Retina XDR',
+      text: 'Mini-LED com 1.000 nits de brilho contínuo, pico de 1.600 em HDR e ProMotion de até 120 Hz. É a melhor tela da lista: os Air ficam em 500 nits e 60 Hz.',
+      note: 'Em fundo preto com legenda aparece um halo leve (blooming). É normal do mini-LED.' },
+    { id: 'portas', label: 'Portas', big: '7 portas', title: 'HDMI e cartão SD de volta',
+      text: 'À esquerda: MagSafe 3, dois Thunderbolt 4 e fone. À direita: HDMI, Thunderbolt 4 e leitor SDXC. Nada de adaptador para TV, projetor ou cartão da câmera.',
+      note: 'O HDMI é 2.0: até 4K a 60 Hz.' },
+    { id: 'chip', label: 'Chip', big: '200 GB/s', title: 'Chip M1 Pro',
+      text: 'CPU de 10 núcleos (8 de desempenho e 2 de eficiência), GPU de 16 núcleos e banda de memória de 200 GB/s, o dobro do Air M2 e M3. Com ventoinhas, segura carga pesada sem cair de velocidade.',
+      note: 'Em um núcleo é mais lento que os Air novos: ≈ 2.380 contra ≈ 4.150 no M5.' },
+    { id: 'bateria', label: 'Bateria', big: '100 Wh', title: 'Bateria e carregador',
+      text: 'A maior bateria da lista: até 21 h de vídeo quando nova. Com o carregador de 140 W vai a 50% em cerca de 30 minutos. 100 Wh é o limite para levar na cabine sem pedir autorização à companhia aérea.',
+      note: 'Num recondicionado a bateria já tem uso. Troca na Apple (EUA): US$ 249.' },
+    { id: 'som', label: 'Som', big: '6 alto\u2011falantes', title: 'Som, microfones e câmera',
+      text: 'Seis alto-falantes com woofers de cancelamento de força e áudio espacial, três microfones com qualidade de estúdio e saída de fone para headphones de alta impedância. Câmera de 1080p.',
+      note: 'Teste no volume máximo: chiado indica alto-falante danificado.' },
+    { id: 'suporte', label: 'Suporte', big: '~2031', title: 'Até quando recebe atualizações',
+      text: 'Roda o macOS 27 e o Apple Intelligence hoje. Estimativa: versões novas do macOS até ~2027–2029 e correções de segurança até ~2030–2032.',
+      note: 'Alguns recursos novos da Siri já exigem M3 ou mais novo. Vintage na Apple por volta de jan/2028; obsoleto (sem conserto na Apple) por volta de jan/2030.' },
+  ],
+  variants: [
+    { name: 'M1 Pro · 16 GB · 512 GB', tag: 'O comparado aqui', price: 'US$ 680–890',
+      text: 'A configuração de entrada do 16″. Peça MK183LL/A (cinza-espacial) ou MK1E3LL/A (prateado).' },
+    { name: 'M1 Pro · 32 GB · 512 GB', tag: 'Vale olhar', price: '≈ US$ 800–900',
+      text: 'O dobro de memória por pouco mais: ajuda com muitas abas, máquinas virtuais e IA local, e envelhece melhor. Já apareceu por US$ 768 em março.' },
+    { name: 'M1 Max · 32 GB ou mais', tag: 'Só para vídeo pesado', price: 'varia',
+      text: 'GPU de 24 ou 32 núcleos e 400 GB/s, mas pesa ≈ 2,2 kg, esquenta mais e gasta mais bateria. Só compensa para edição de vídeo e 3D.' },
+  ],
+  // Alternativa no mesmo corpo, para comparar.
+  m2pro: {
+    name: 'MacBook Pro 16″ M2 Pro', year: 2023, price: [1107, 1299.99],
+    priceNote: 'Back Market "Good" ≈ US$ 1.107 · Best Buy Certified Refurbished US$ 1.299,99',
+    support: { majorEnd: [2028, 2030], securityEnd: [2031, 2033] },
+    gb6: { single: 2650, multi: 14500 },
+    weight: '2,15 kg', battery: 'até 22 h', wireless: 'Wi-Fi 6E', hdmi: 'HDMI 2.1 (até 8K)',
+    url: 'https://www.bestbuy.com/site/apple-macbook-pro-16-inch-certified-refurbished-m2-pro-12-cpu-19-gpu-with-16gb-memory-512gb-ssd-silver/6587228.p?skuId=6587228',
+  },
+  checklist: [
+    ['config', 'Confira a configuração', 'Menu Apple > Sobre este Mac: "Apple M1 Pro" e 16 GB (ou 32 GB). Modelo A2485.'],
+    ['serial', 'Número de série', 'Em checkcoverage.apple.com, o modelo tem de bater com o anúncio: MacBook Pro (16 polegadas, 2021).'],
+    ['icloud', 'Sem iCloud nem Buscar', 'O Mac deve estar apagado e não pode pedir o Apple ID do dono anterior. Nunca compre bloqueado.'],
+    ['mdm', 'Sem gerenciamento remoto', 'Na configuração não pode aparecer "Gerenciamento Remoto". No Terminal, `profiles status -type enrollment` deve responder "No".'],
+    ['battery', 'Saúde da bateria', 'Ajustes > Bateria > Saúde: ideal acima de 85% e menos de 300 ciclos. "Manutenção recomendada" vale desconto (troca: US$ 249).'],
+    ['screen', 'Tela', 'Abra uma imagem branca e uma preta em tela cheia: sem pixels mortos, manchas ou linhas. Halo leve no preto é normal.'],
+    ['ports', 'Todas as portas', 'Teste os 3 Thunderbolt, o HDMI, o leitor SD, o fone e o MagSafe carregando (luz âmbar, depois verde).'],
+    ['keyboard', 'Teclado, trackpad e Touch ID', 'Todas as teclas, clique firme no trackpad inteiro e cadastro de digital.'],
+    ['sound', 'Som, câmera e microfones', 'Volume máximo sem chiado; grave um vídeo curto no Photo Booth.'],
+    ['diag', 'Diagnóstico da Apple', 'Desligue, segure o botão liga até ver as opções de inicialização e aperte Command + D.'],
+    ['charger', 'Carregador original', 'O ideal é o de 140 W com cabo MagSafe 3. Genérico esquenta: desconte do preço.'],
+    ['receipt', 'Recibo e devolução', 'Peça o recibo com o número de série e confirme o prazo de devolução da loja.'],
+  ],
+};
+
+SOURCES.push(
+  ['MacRumors · tudo sobre o macOS 27 Golden Gate e os Macs compatíveis', 'https://www.macrumors.com/roundup/macos-27/'],
+  ['Heise · Apple confirma 3 anos de segurança para Macs Intel', 'https://www.heise.de/en/news/macOS-Apple-announces-Intel-security-update-duration-11328845.html'],
+  ['MacObserver · macOS 27 em Macs M1 e M2 (recursos da Siri só no M3+)', 'https://www.macobserver.com/news/macos-27-golden-gate-m1-m2-macs-what-changes-monday/'],
+  ['MacRumors · produtos vintage e obsoletos da Apple (regra de 5 e 7 anos)', 'https://www.macrumors.com/guide/vintage-and-obsolete/'],
+  ['Apple Parts (TrackIt) · troca de bateria nos EUA, 02/10/2026', 'https://apple-parts.trackit.co.in/us/mac/battery-price-list/'],
+  ['RefurbMe · ofertas do Pro 16″ M1 Pro (12/10/2026)', 'https://www.refurb.me/refurbished/macbook/macbook-pro/16-inch/m1-pro'],
+  ['Best Buy · Pro 16″ M2 Pro Certified Refurbished', 'https://www.bestbuy.com/site/apple-macbook-pro-16-inch-certified-refurbished-m2-pro-12-cpu-19-gpu-with-16gb-memory-512gb-ssd-silver/6587228.p?skuId=6587228'],
+);

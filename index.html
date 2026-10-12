@@ -26,7 +26,8 @@
       </a>
       <nav class="globalnav-links" aria-label="Seções">
         <a href="#modelos">Modelos</a>
-        <a href="#desempenho">Desempenho</a>
+        <a href="#suporte">Atualizações</a>
+        <a href="#pro-2021">Pro 2021</a>
         <a href="#comparar">Especificações</a>
         <a href="#precos">Preços</a>
         <a href="#lojas">Lojas</a>
@@ -42,6 +43,8 @@
         <a href="#veredito">Veredito</a>
         <a href="#modelos">Modelos</a>
         <a href="#desempenho">Desempenho</a>
+        <a href="#suporte">Atualizações</a>
+        <a href="#pro-2021">Raio-X do Pro 2021</a>
         <a href="#comparar">Especificações</a>
         <a href="#precos">Preços</a>
         <a href="#lojas">Lojas</a>
@@ -60,7 +63,8 @@
       </a>
       <div class="localnav-actions">
         <a class="localnav-link" href="#veredito">Veredito</a>
-        <a class="localnav-link" href="#comparar">Especificações</a>
+        <a class="localnav-link" href="#suporte">Atualizações</a>
+        <a class="localnav-link" href="#pro-2021">Pro 2021</a>
         <a class="pill-button pill-button--small" href="#calculadora">Calcular custo</a>
       </div>
     </div>
@@ -126,7 +130,7 @@
     </section>
 
     <!-- LINHA DO TEMPO: seção fixa, cada rolada troca o modelo -->
-    <section class="timeline" id="linha-do-tempo" aria-labelledby="tl-title">
+    <section class="timeline" id="linha-do-tempo" aria-labelledby="tl-title" data-nav-dark>
       <div class="timeline-sticky">
         <div class="container timeline-grid">
           <div class="timeline-copy">
@@ -175,6 +179,53 @@
         <p class="section-intro reveal">Pontuação aproximada no Geekbench 6. Serve para comparar a ordem de grandeza, não para decidir por 5%.</p>
         <div class="perf-grid" id="perf-grid"></div>
         <div class="feature-rows reveal" id="feature-rows"></div>
+      </div>
+    </section>
+
+    <!-- ATUALIZAÇÕES: quanto tempo cada um dura -->
+    <section class="section section--alt" id="suporte" aria-labelledby="suporte-title">
+      <div class="container">
+        <h2 class="headline reveal" id="suporte-title"><span class="muted">Atualizações.</span><br>Quanto tempo cada um dura.</h2>
+        <p class="section-intro reveal" id="support-note"></p>
+        <figure class="support-chart reveal" id="support-chart"></figure>
+        <h3 class="subhead reveal">Quanto falta para cada um</h3>
+        <p class="section-intro reveal" id="longevity-intro"></p>
+        <div class="longevity" id="longevity"></div>
+        <h3 class="subhead reveal">Conserto e bateria</h3>
+        <p class="section-intro reveal">A Apple conserta um Mac até 5 anos depois de parar de vendê-lo. Entre 5 e 7 anos ele vira "vintage" (só se houver peça); depois de 7, "obsoleto" (sem conserto na Apple). Troca de bateria pode valer por até 10 anos.</p>
+        <div class="spec-table-wrap" id="service-table" tabindex="0" aria-label="Tabela de conserto e bateria (role para o lado no celular)"></div>
+      </div>
+    </section>
+
+    <!-- RAIO-X DO PRO 2021: seção fixa, cada rolada mostra uma parte -->
+    <section class="xray" id="pro-2021" aria-labelledby="xray-title" data-nav-dark>
+      <div class="xray-sticky">
+        <div class="container xray-grid">
+          <div class="xray-copy">
+            <p class="xray-eyebrow">Raio-X</p>
+            <h2 class="xray-heading" id="xray-title">MacBook Pro 16″ 2021</h2>
+            <div class="xray-steps" id="xray-steps"></div>
+          </div>
+          <div class="xray-visual" id="xray-visual" aria-hidden="true"></div>
+        </div>
+        <div class="container">
+          <nav class="xray-rail" id="xray-rail" aria-label="Partes do Raio-X"></nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRO 2021: vale a pena? -->
+    <section class="section" id="pro-2021-compra" aria-labelledby="pro-buy-title">
+      <div class="container">
+        <h2 class="headline reveal" id="pro-buy-title"><span class="muted">Gostou do Pro 2021?</span><br>O que saber antes de comprar.</h2>
+        <p class="section-intro reveal">Ele contra o irmão mais novo no mesmo corpo (M2 Pro, 2023) e contra o favorito do veredito.</p>
+        <div class="pro-compare reveal" id="pro-compare"></div>
+        <p class="pro-verdict reveal" id="pro-verdict"></p>
+        <h3 class="subhead reveal">Qual versão procurar</h3>
+        <div class="variants" id="variants"></div>
+        <h3 class="subhead reveal">Checklist na hora da compra</h3>
+        <p class="section-intro reveal">Marque conforme for testando. Fica salvo neste aparelho.</p>
+        <div class="checklist" id="checklist"></div>
       </div>
     </section>
 
@@ -269,7 +320,7 @@
       <h2 class="footer-title">Fontes</h2>
       <ol class="sources" id="sources"></ol>
       <p class="footer-note">Projeto pessoal, sem vínculo com a Apple ou com as lojas citadas. Preços consultados em 11/10/2026 e mudam todos os dias: confira o anúncio antes de comprar. Pontuações de desempenho são aproximadas.</p>
-      <p class="footer-note">Mac na Mala · versão 1.0</p>
+      <p class="footer-note">Mac na Mala · versão 1.1 · estimativas de suporte baseadas no histórico da Apple, que não divulga prazos</p>
     </div>
   </footer>
 
