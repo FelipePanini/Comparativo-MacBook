@@ -36,12 +36,12 @@ export const MODELS = [
     wallpaper: ['#0b3d91', '#1aa6c9', '#8fe3d5'],
     notch: true, pro: false, chin: false,
     gb6: { single: 4150, multi: 16800 },
-    summary: 'O mais novo e o mais rápido da lista. Já vem com 512 GB de série, Wi-Fi 7 e garantia nova. A Apple subiu o preço para US$\u00a01.499 em junho, mas Amazon e Best Buy vendem por US$\u00a01.299.',
+    summary: 'O mais novo e o mais rápido da lista. Já vem com 512 GB de série, Wi-Fi 7 e garantia nova. A Apple subiu o preço para US$\u00a01.499 em junho; Amazon e Best Buy chegaram a US$\u00a01.299 no início de outubro e em 16/10 estavam a US$\u00a01.399.',
     pros: ['O chip mais rápido da lista', 'Wi-Fi 7 e Bluetooth 6 (chip N1)', 'Garantia nova e o maior tempo de atualizações pela frente', 'Silencioso: não tem ventoinha'],
     cons: ['O mais caro dos seis', 'Passa da cota de US$\u00a01.000 da Receita sozinho', 'Tela de 60 Hz, sem ProMotion'],
     brazil: { label: 'No Brasil', amazon: 15699, importers: [10799, 11299] },
     release: 2026.17,
-    typicalPrice: 1299,
+    typicalPrice: 1399,
     // Apple não publica prazos: estimativa pelo histórico (ver SUPPORT_NOTE).
     support: { majorEnd: [2031, 2033], securityEnd: [2034, 2036] },
     service: { discontinued: 'à venda', vintage: '2031 ou depois', obsolete: '2033 ou depois', battery: 199, wh: '≈ 66,5 Wh', charger: '40 W USB-C' },
@@ -120,7 +120,7 @@ export const MODELS = [
     wallpaper: ['#4b2a7b', '#c05fa8', '#f4b9a2'],
     notch: true, pro: false, chin: false,
     gb6: { single: 3050, multi: 11900 },
-    summary: 'Bom computador, preço ruim: recondicionado anda entre US$\u00a0990 e US$\u00a01.310, faixa em que o M5 novo (US$\u00a01.299) entrega bem mais.',
+    summary: 'Bom computador, preço ruim: recondicionado anda entre US$\u00a0990 e US$\u00a01.310, faixa em que o M5 novo (US$\u00a01.299 a 1.399) entrega bem mais.',
     pros: ['Wi-Fi 6E', 'Até 2 monitores (com a tampa fechada)', 'Sem ventoinha'],
     cons: ['Preço de recondicionado colado no M5 novo', 'Câmera de 1080p', 'Um chip a menos de vida útil que o M4'],
     release: 2024.17,
@@ -298,8 +298,8 @@ export const SPEC_ROWS = [
 // Preços coletados. condition: 'novo' | 'recondicionado' (open-box conta como recondicionado).
 // stale: true quando a data do anúncio não pôde ser confirmada.
 export const PRICES = [
-  { model: 'air-m5', store: 'amazon',  condition: 'novo', price: 1299, date: '09/10/2026', note: 'US$\u00a0200 abaixo do preço da Apple', url: 'https://www.amazon.com/s?k=MacBook+Air+15+M5+16GB+512GB' },
-  { model: 'air-m5', store: 'bestbuy', condition: 'novo', price: 1299, date: 'out/2026', note: 'Oferta "Techtober"; confira se ainda vale', url: 'https://www.bestbuy.com/product/apple-macbook-air-15-inch-laptop-m5-chip-with-10-core-cpu-and-10-core-gpu-16gb-memory-512gb-ssd-midnight/JJGCQLKQL9' },
+  { model: 'air-m5', store: 'amazon',  condition: 'novo', price: 1399, date: '16/10/2026', note: 'Esteve a US$\u00a01.299 no Prime Big Deal Days (início de outubro)', url: 'https://www.amazon.com/s?k=MacBook+Air+15+M5+16GB+512GB' },
+  { model: 'air-m5', store: 'bestbuy', condition: 'novo', price: 1399, date: '16/10/2026', note: 'Depois do "Techtober" (US$\u00a01.299)', url: 'https://www.bestbuy.com/product/apple-macbook-air-15-inch-laptop-m5-chip-with-10-core-cpu-and-10-core-gpu-16gb-memory-512gb-ssd-midnight/JJGCQLKQL9' },
   { model: 'air-m5', store: 'walmart', condition: 'novo', price: 1444, date: 'out/2026', url: 'https://www.walmart.com/ip/Apple-15-inch-MacBook-Air-Apple-M5-nbsp-chip-w-10-core-CPU-10-core-GPU-512GB-SSD-16GB-RAM-Silver-MDV94LL-A-2026/19710568181' },
   { model: 'air-m5', store: 'costco',  condition: 'novo', price: 1459.99, date: 'out/2026', note: 'Inclui 2 anos de garantia e 90 dias para devolver', url: 'https://www.costco.com/p/-/macbook-air-laptop-15-inch-with-apple-m5-chip-built-for-apple-intelligence/4000444232' },
   { model: 'air-m5', store: 'apple',   condition: 'novo', price: 1499, date: '11/10/2026', note: 'Preço cheio depois do aumento de 25/06/2026', url: 'https://www.apple.com/shop/buy-mac/macbook-air' },
@@ -344,7 +344,7 @@ export const STORES = [
     id: 'amazon', name: 'Amazon', kind: 'varejo', sells: 'Novo · Renewed',
     warranty: 'Novo: 1 ano Apple · Renewed: 90 dias (Premium: 1 ano)', returns: '30 dias',
     tip: 'Costuma ter o menor preço do M5 novo. Compre só anúncios "Ships from and sold by Amazon.com" e entregue no hotel ou num Amazon Locker.',
-    pros: ['Menor preço do M5 hoje (US$\u00a01.299)', 'Entrega rápida em lockers'],
+    pros: ['Costuma ter o menor preço do M5 novo', 'Entrega rápida em lockers'],
     cons: ['Marketplace tem vendedores terceiros: fique no "sold by Amazon"'],
     url: 'https://www.amazon.com/s?k=MacBook+Air+15+M5+16GB+512GB',
   },
@@ -406,13 +406,15 @@ export const STATES = [
   { id: 'tx', label: 'Texas · Houston / Dallas', rate: 8.25 },
   { id: 'ma-boston', label: 'Massachusetts · Boston', rate: 6.25 },
   { id: 'il-chicago', label: 'Illinois · Chicago', rate: 10.25 },
-  { id: 'ga-atl', label: 'Geórgia · Atlanta', rate: 8.9 },
+  { id: 'ga-atl', label: 'Geórgia · Atlanta (cidade)', rate: 8.9 },
+  { id: 'ga-cobb', label: 'Geórgia · Atlanta (Cobb e Gwinnett)', rate: 6 },
   { id: 'de', label: 'Delaware (sem imposto)', rate: 0 },
   { id: 'or', label: 'Oregon (sem imposto)', rate: 0 },
   { id: 'nh', label: 'New Hampshire (sem imposto)', rate: 0 },
 ];
 
 export const SOURCES = [
+  ['MacRumors · ofertas de MacBook Air M5 (16/10/2026)', 'https://www.macrumors.com/guide/macbook-pro-air-deals/'],
   ['MacRumors · todos os M5 MacBook Air com US$\u00a0200 de desconto (09/10/2026)', 'https://www.macrumors.com/2026/10/09/every-m5-macbook-air-200-off/'],
   ['9to5Mac · aumento de preços da Apple (25/06/2026)', 'https://9to5mac.com/2026/06/25/apple-price-increases-mac-ipad-more/'],
   ['MacRumors · aumento nos recondicionados da Apple (25/06/2026)', 'https://www.macrumors.com/2026/06/25/apple-raises-refurbished-mac-ipad-prices/'],

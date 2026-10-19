@@ -3,7 +3,12 @@
 Comparativo visual de seis MacBooks de 15″ e 16″ (todos com 16 GB de memória e 512 GB de SSD) para quem vai comprar nos Estados Unidos: preços em lojas oficiais e de recondicionados, custo final em reais e um checklist da viagem.
 
 Modelos: MacBook Air 15″ M2, M3, M4 e M5, MacBook Pro 16″ 2019 (Intel) e 2021 (M1 Pro).
-Preços consultados em 11 e 12/10/2026.
+Preços consultados entre 11 e 18/10/2026.
+
+Duas páginas:
+
+- `index.html`: o comparativo dos seis modelos.
+- `ofertas.html`: o **rastreador de ofertas do MacBook Air M5** (13″ e 15″, 16 GB/512 GB).
 
 ## O que tem no site
 
@@ -18,6 +23,21 @@ Preços consultados em 11 e 12/10/2026.
 - **Lojas:** Apple, Apple Certified Refurbished, Amazon, Best Buy, Costco, Walmart, Back Market e eBay Refurbished.
 - **Calculadora:** preço + sales tax do estado + IOF + imposto de importação acima da cota de US$ 1.000, comparado ao preço no Brasil.
 - **Dicas:** cota da Receita, teclado americano, garantia, o que testar num recondicionado.
+
+## Rastreador de ofertas do Air M5 (`ofertas.html`)
+
+- **Hero com rolagem:** o preço de cada tamanho cai do valor da Apple até a melhor oferta, e aparece o custo final em reais.
+- **Melhor oferta agora:** escolha 13″ ou 15″ e onde vai comprar. Mostra o preço, a conta completa (preço, sales tax, IOF, imposto de importação), quanto da cota de US$ 1.000 foi usado, o teto de preço para entrar na cota e quanto você economiza em relação ao Brasil.
+- **Todas as ofertas:** lojas físicas e online (Amazon, Best Buy, B&H, Apple, Apple Recondicionado, Costco, Walmart, Micro Center), com filtro por canal e estado (novo, Open-Box, recondicionado) e selos de menor preço já visto.
+- **A conta, seção fixa:** cada rolada soma uma taxa numa cascata e termina com o preço no Brasil ao lado.
+- **Histórico:** gráfico desde o lançamento (mar/2026), com o aumento da Apple em 25/06, a linha do teto da cota e a Black Friday. Alterna entre dólar e "custo final × Brasil". Tem versão em tabela e os recordes por loja.
+- **Brasil × EUA:** barras com a melhor oferta dos EUA (com taxas) contra a melhor loja brasileira e a Apple Brasil.
+- **Cidades:** Atlanta por condado (Cobb e Gwinnett 6%, cidade de Atlanta 8,9%…), estados sem sales tax e outras cidades, com as lojas de cada uma. Tocar numa cidade refaz as contas da página inteira.
+- **Quando comprar:** calendário de promoções; informe as datas da viagem para ver o que coincide.
+- **Como pagar menos imposto:** estratégias e mitos (cota individual, multa por não declarar, notebook usado entra na cota).
+- **Meus preços:** registre um preço visto numa loja; ele entra na lista, no gráfico e na conta. Fica salvo só no aparelho (localStorage), junto com tamanho, cidade e câmbio escolhidos.
+
+O site não consulta as lojas sozinho: os preços vêm de `assets/js/deals.js`, e a seção "Meus preços" lista serviços de alerta (camelcamelcamel, Slickdeals etc.).
 
 ## Rodar localmente
 
@@ -41,6 +61,13 @@ Todos os números ficam em `assets/js/data.js`:
 - `PRO2021`: textos do Raio-X, versões, a comparação com o M2 Pro e o checklist.
 - `SOURCES`: a lista de fontes do rodapé.
 
+O rastreador usa `assets/js/deals.js`:
+
+- `OFFERS`: preço de hoje em cada loja (`size` '13' ou '15', `store`, `condition`, `price`, `date` em AAAA-MM-DD). `stale: true` tira o preço da "melhor oferta".
+- `HISTORY`: um ponto por preço marcante (vira o gráfico). `RECORDS` e `SINCE_HIKE`: os menores preços.
+- `BRAZIL`: preços no Brasil. `CITIES`: sales tax e lojas por região. `CALENDAR`: janelas de promoção.
+- Ao atualizar, mude também `TRACKER_CHECKED`.
+
 Depois de editar, recarregue a página. Não há mais nada para mudar.
 
 ## Estrutura
@@ -48,9 +75,13 @@ Depois de editar, recarregue a página. Não há mais nada para mudar.
 ```
 index.html            estrutura das seções
 assets/css/style.css  tokens (claro/escuro), layout, movimento e acessibilidade
-assets/js/data.js     fonte única dos dados
+ofertas.html          rastreador de ofertas do Air M5
+assets/js/data.js     dados do comparativo
+assets/js/deals.js    dados do rastreador (ofertas, histórico, Brasil, cidades, calendário)
 assets/js/spring.js   molas no estilo Apple (damping + response), projeção de inércia e elástico
-assets/js/app.js      renderização, rolagem, carrossel, painel, gráficos e calculadora
+assets/js/core.js     peças comuns: utilidades, motor de rolagem, cálculo de custo, navegação, ícones
+assets/js/app.js      página do comparativo: carrossel, painel, gráficos e calculadora
+assets/js/tracker.js  página do rastreador
 assets/img/           favicon
 ```
 
